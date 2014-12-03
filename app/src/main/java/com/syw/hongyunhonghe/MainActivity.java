@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.syw.hongyunhonghe.model.DataModel;
+
 
 public class MainActivity extends Activity {
 
@@ -12,6 +14,16 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // init DataModel
+        DataModel.init(this);
+
+        // refresh magazines list
+        refreshMagazines();
+    }
+
+    private void refreshMagazines() {
+
     }
 
 
