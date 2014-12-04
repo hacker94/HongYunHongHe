@@ -1,8 +1,28 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
         <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
+        <item name="android:popupMenuStyle">@style/AppTheme.PopupMenu</item>
+    </style>
+
+    <style name="AppTheme.ActionBar" parent="android:Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/white</item>
+        <item name="android:icon">@color/transparent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
+    </style>
+
+    <style name="AppTheme.ActionBar.Title" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
+    <style name="AppTheme.PopupMenu" parent="android:Widget.Holo.Light.PopupMenu">
+
     </style>
 
 </resources>

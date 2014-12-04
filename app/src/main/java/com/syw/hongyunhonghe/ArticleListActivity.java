@@ -1,38 +1,24 @@
 package com.syw.hongyunhonghe;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.syw.hongyunhonghe.model.DataModel;
 
-
-public class MainActivity extends Activity {
+public class ArticleListActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // init DataModel
-        DataModel.init(this);
-
-        // refresh magazines list
-        refreshMagazines();
-    }
-
-    // TODO: refresh magazine list
-    private void refreshMagazines() {
-
+        setContentView(R.layout.activity_article_list);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_article_list, menu);
         return true;
     }
 
@@ -44,11 +30,8 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_main_refresh) {
-            refreshMagazines();
-        } else if (id == R.id.action_main_user) {
-            Intent intent = new Intent(this, ArticleListActivity.class);
-            startActivity(intent);
+        if (id == R.id.action_settings) {
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
