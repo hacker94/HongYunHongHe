@@ -71,7 +71,7 @@ public class ArticleActivity extends Activity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager(), articleList, mViewPager);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager(), articleList);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -115,19 +115,17 @@ public class ArticleActivity extends Activity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private ArrayList<ArticleInfo> arrayList;
-        private ViewPager mViewPager;
 
-        public SectionsPagerAdapter(FragmentManager fm, ArrayList<ArticleInfo> arrayList, ViewPager mViewPager) {
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<ArticleInfo> arrayList) {
             super(fm);
             this.arrayList = arrayList;
-            this.mViewPager = mViewPager;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return ArticleFragment.newInstance(position, arrayList.get(position), arrayList, mViewPager);
+            return ArticleFragment.newInstance(position, arrayList.get(position), arrayList);
         }
 
         @Override
@@ -156,23 +154,23 @@ public class ArticleActivity extends Activity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_ARTICLE_INFO = "article_info";
+        private static final String ARG_ARTICLE_LIST = "article_list";
 
         private ArticleInfo articleInfo;
         private ArrayList<ArticleInfo> articleList;
-        private ViewPager mViewPager;
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static ArticleFragment newInstance(int sectionNumber, ArticleInfo articleInfo, ArrayList<ArticleInfo> articleList, ViewPager mViewPager) {
+        public static ArticleFragment newInstance(int sectionNumber, ArticleInfo articleInfo, ArrayList<ArticleInfo> articleList) {
             ArticleFragment fragment = new ArticleFragment();
-            fragment.articleInfo = articleInfo;
-            fragment.articleList = articleList;
-            fragment.mViewPager = mViewPager;
 
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putSerializable(ARG_ARTICLE_INFO, articleInfo);
+            args.putSerializable(ARG_ARTICLE_LIST, articleList);
             fragment.setArguments(args);
             return fragment;
         }
@@ -186,6 +184,10 @@ public class ArticleActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_article, container, false);
+
+            // get articles from bundle
+            articleInfo = (ArticleInfo)this.getArguments().getSerializable(ARG_ARTICLE_INFO);
+            articleList = (ArrayList<ArticleInfo>)this.getArguments().getSerializable(ARG_ARTICLE_LIST);
 
             // get content LinearLayout
             LinearLayout contentLL = (LinearLayout)rootView.findViewById(R.id.article_content_layout);
@@ -285,6 +287,7 @@ public class ArticleActivity extends Activity {
 
             if (requestCode == PICK_ARTICLE_REQUEST) {
                 if (resultCode == RESULT_OK) {
+                    ViewPager mViewPager = (ViewPager)getActivity().findViewById(R.id.pager);
                     mViewPager.setCurrentItem(data.getIntExtra(PICKED_ARTICLE, 0));
                 }
             }

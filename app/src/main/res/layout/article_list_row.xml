@@ -11,12 +11,14 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="@dimen/article_list_row_padding">
+        android:paddingLeft="@dimen/article_list_row_horizontal_padding"
+        android:paddingRight="@dimen/article_list_row_horizontal_padding"
+        android:paddingTop="@dimen/article_list_row_vertical_padding"
+        android:paddingBottom="@dimen/article_list_row_vertical_padding">
 
         <ImageView
             android:layout_width="@dimen/article_list_red_square_size"
             android:layout_height="@dimen/article_list_red_square_size"
-            android:layout_marginRight="@dimen/red_square_margin_right"
             android:src="@drawable/red_square"/>
 
         <TextView
@@ -24,13 +26,15 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingLeft="@dimen/article_list_text_horizontal_padding"
+            android:paddingRight="@dimen/article_list_text_horizontal_padding"
             android:textSize="@dimen/article_list_text_size"/>
 
         <TextView
             android:id="@+id/article_number_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/article_list_text_size"/>
+            android:textSize="@dimen/article_list_page_number_size"/>
 
     </LinearLayout>
 
