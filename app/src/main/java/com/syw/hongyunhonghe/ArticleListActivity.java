@@ -3,6 +3,7 @@ package com.syw.hongyunhonghe;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,11 +52,14 @@ public class ArticleListActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra(ArticleActivity.PICKED_ARTICLE, (Integer)rowLayout.getTag());
+                    returnIntent.putExtra(ArticleActivity.PICKED_ARTICLE, (Integer) rowLayout.getTag());
                     setResult(RESULT_OK, returnIntent);
                     finish();
                 }
             });
+
+            // add to articlesLL
+            articlesLL.addView(rowLayout);
         }
 
     }

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="white">#FFFFFF</color>
-    <color name="red">#FF0000</color>
+    <color name="red">#c00000</color>
+    <color name="gray">#40000000</color>
+
     <color name="transparent">#00000000</color>
+
+    <color name="horizontal_ruler_gray">#40c0c0c0</color>
+    <color name="article_title_content_line">#80FF0000</color>
+
 </resources>

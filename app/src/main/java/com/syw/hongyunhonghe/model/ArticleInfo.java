@@ -52,7 +52,7 @@ public class ArticleInfo implements Serializable {
 
     public void getNextImg(DataModel dm, DataFoundListener listener) {
         // parse the img id
-        int imgID = Integer.parseInt(contentList.get(i++).split(":")[0].substring(5));
+        int imgID = Integer.parseInt(contentList.get(i++).split(":")[1]);
 
         // find it
         dm.getImgById(imgID, listener);

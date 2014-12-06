@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/article_list_row_padding"
     android:nestedScrollingEnabled="false"
+    android:orientation="vertical"
     android:clickable="true">
 
-    <ImageView
-        android:layout_width="@dimen/article_list_red_square_size"
-        android:layout_height="@dimen/article_list_red_square_size"
-        android:src="@drawable/red_square"/>
-
-    <TextView
-        android:id="@+id/article_title_text_view"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="@dimen/article_list_text_size"/>
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/article_list_row_padding">
 
-    <TextView
-        android:id="@+id/article_number_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/article_list_text_size"/>
+        <ImageView
+            android:layout_width="@dimen/article_list_red_square_size"
+            android:layout_height="@dimen/article_list_red_square_size"
+            android:layout_marginRight="@dimen/red_square_margin_right"
+            android:src="@drawable/red_square"/>
+
+        <TextView
+            android:id="@+id/article_title_text_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="@dimen/article_list_text_size"/>
+
+        <TextView
+            android:id="@+id/article_number_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/article_list_text_size"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="@color/horizontal_ruler_gray"/>
 
 </LinearLayout>

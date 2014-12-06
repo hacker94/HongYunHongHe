@@ -13,13 +13,17 @@ import android.provider.ContactsContract;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -59,15 +63,17 @@ public class ArticleActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         // get articles
         ArrayList<ArticleInfo> articleList = (ArrayList<ArticleInfo>)getIntent().getSerializableExtra(MainActivity.ARTICLE_LIST);
 
+        mViewPager = (ViewPager) findViewById(R.id.pager);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager(), articleList);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager(), articleList, mViewPager);
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
     }
@@ -95,16 +101,7 @@ public class ArticleActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_ARTICLE_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                mViewPager.setCurrentItem(data.getIntExtra(PICKED_ARTICLE, 0));
-            }
-        }
-    }
 
 
 
@@ -118,17 +115,19 @@ public class ArticleActivity extends Activity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private ArrayList<ArticleInfo> arrayList;
+        private ViewPager mViewPager;
 
-        public SectionsPagerAdapter(FragmentManager fm, ArrayList<ArticleInfo> arrayList) {
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<ArticleInfo> arrayList, ViewPager mViewPager) {
             super(fm);
             this.arrayList = arrayList;
+            this.mViewPager = mViewPager;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return ArticleFragment.newInstance(position, arrayList.get(position), arrayList);
+            return ArticleFragment.newInstance(position, arrayList.get(position), arrayList, mViewPager);
         }
 
         @Override
@@ -160,15 +159,17 @@ public class ArticleActivity extends Activity {
 
         private ArticleInfo articleInfo;
         private ArrayList<ArticleInfo> articleList;
+        private ViewPager mViewPager;
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static ArticleFragment newInstance(int sectionNumber, ArticleInfo articleInfo, ArrayList<ArticleInfo> articleList) {
+        public static ArticleFragment newInstance(int sectionNumber, ArticleInfo articleInfo, ArrayList<ArticleInfo> articleList, ViewPager mViewPager) {
             ArticleFragment fragment = new ArticleFragment();
             fragment.articleInfo = articleInfo;
             fragment.articleList = articleList;
+            fragment.mViewPager = mViewPager;
 
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -179,6 +180,8 @@ public class ArticleActivity extends Activity {
         public ArticleFragment() {
         }
 
+
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -186,6 +189,39 @@ public class ArticleActivity extends Activity {
 
             // get content LinearLayout
             LinearLayout contentLL = (LinearLayout)rootView.findViewById(R.id.article_content_layout);
+
+            // add title, subtitle, author text
+            TextView titleTextView = new TextView(getActivity());
+            titleTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.article_title_text_size));
+            titleTextView.setTextColor(getResources().getColor(R.color.red));
+            titleTextView.setText(articleInfo.getTitle());
+
+            TextView subtitleTextView = new TextView(getActivity());
+            subtitleTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            subtitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.article_subtitle_text_size));
+            subtitleTextView.setText(articleInfo.getSubtitle());
+
+            TextView authorTextView = new TextView(getActivity());
+            authorTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            authorTextView.setGravity(Gravity.RIGHT);
+            authorTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.article_author_text_size));
+            authorTextView.setTextColor(getResources().getColor(R.color.gray));
+            authorTextView.setText(articleInfo.getAuthor());
+
+            if (articleInfo.isSwapTitlePos()) {
+                contentLL.addView(subtitleTextView);
+                contentLL.addView(titleTextView);
+            } else {
+                contentLL.addView(titleTextView);
+                contentLL.addView(subtitleTextView);
+            }
+            contentLL.addView(authorTextView);
+
+            // add a line
+            View ruler = new View(getActivity());
+            ruler.setBackgroundColor(getResources().getColor(R.color.article_title_content_line));
+            contentLL.addView(ruler, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
 
             // add content
             articleInfo.reset();
@@ -212,6 +248,9 @@ public class ArticleActivity extends Activity {
                     // create a text view
                     TextView textView = new TextView(getActivity());
                     textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.article_text_size));
+                    int padding = getResources().getDimensionPixelSize(R.dimen.article_text_padding);
+                    textView.setPadding(0, padding, 0, padding);
                     textView.setText(part);
 
                     // add to contentLL
@@ -233,7 +272,22 @@ public class ArticleActivity extends Activity {
                 }
             });
 
+            // set review edit text
+            EditText reviewEditText = (EditText)rootView.findViewById(R.id.review_edit_text);
+
             return rootView;
+        }
+
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == PICK_ARTICLE_REQUEST) {
+                if (resultCode == RESULT_OK) {
+                    mViewPager.setCurrentItem(data.getIntExtra(PICKED_ARTICLE, 0));
+                }
+            }
         }
 
     }

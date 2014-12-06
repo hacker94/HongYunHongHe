@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +48,9 @@ public class MainActivity extends Activity {
 
     // refresh magazine list
     private void refreshMagazines() {
+        // clear magazinesLL
+        magazinesLL.removeAllViews();
+
         final DataModel dm = DataModel.getInstance(getBaseContext());
         dm.getMagazines(new DataFoundListener<ArrayList<MagazineInfo>>() {
             @Override
@@ -59,22 +63,22 @@ public class MainActivity extends Activity {
                     // set title
                     TextView magazineTitleTextView = (TextView)mgzIconButton.findViewById(R.id.magazine_title_text_view);
                     magazineTitleTextView.setText(magazineInfo.getTitle());
+                    magazineTitleTextView.setOnClickListener(new MagazineOnClickListener(magazineInfo));
 
                     // set cover
-                    final ImageButton coverImageButton = (ImageButton)findViewById(R.id.cover_image_button);
+                    final ImageButton coverImageButton = (ImageButton)mgzIconButton.findViewById(R.id.cover_image_button);
+                    coverImageButton.setOnClickListener(new MagazineOnClickListener(magazineInfo));
+
+                    // add to magazinesLL
+                    magazinesLL.addView(mgzIconButton);
+
+                    // get img
                     magazineInfo.getCover(dm, new DataFoundListener<BmobFile>() {
                         @Override
                         public void onSuccess(BmobFile imgFile) {
                             imgFile.loadImage(getBaseContext(), coverImageButton);
                         }
                     });
-
-                    // set onClick
-                    magazineTitleTextView.setOnClickListener(new MagazineOnClickListener(magazineInfo));
-                    coverImageButton.setOnClickListener(new MagazineOnClickListener(magazineInfo));
-
-                    // add to magazinesLL
-                    magazinesLL.addView(mgzIconButton);
                 }
 
             }

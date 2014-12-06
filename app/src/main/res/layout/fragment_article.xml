@@ -23,6 +23,11 @@
 
     </ScrollView>
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@color/horizontal_ruler_gray" />
+
 
     <LinearLayout
         android:orientation="horizontal"
@@ -33,9 +38,11 @@
             android:id="@+id/nav_to_article_list_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/transparent"
             android:src="@drawable/ic_action_view_as_list"/>
 
         <EditText
+            android:id="@+id/review_edit_text"
             android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
@@ -44,16 +51,19 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/transparent"
             android:src="@drawable/ic_action_chat"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/transparent"
             android:src="@drawable/ic_action_favorite"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/transparent"
             android:src="@drawable/ic_action_share"/>
 
     </LinearLayout>
