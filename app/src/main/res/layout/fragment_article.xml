@@ -13,6 +13,14 @@
         android:layout_height="fill_parent"
         android:layout_weight="1">
 
+        <LinearLayout
+            android:id="@+id/article_content_layout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </LinearLayout>
+
     </ScrollView>
 
 
@@ -22,6 +30,7 @@
         android:layout_height="40dp">
 
         <ImageButton
+            android:id="@+id/nav_to_article_list_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/ic_action_view_as_list"/>

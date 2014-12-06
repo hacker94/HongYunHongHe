@@ -8,6 +8,7 @@ import cn.bmob.v3.BmobObject;
  * Created by Hacker_PK on 14/12/3.
  */
 public class Article extends BmobObject {
+    private int number;
     private String title;
     private String subtitle;
     private boolean swapTitlePos;
@@ -61,5 +62,13 @@ public class Article extends BmobObject {
 
     public void setMagazine(Magazine magazine) {
         this.magazine = magazine;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 }

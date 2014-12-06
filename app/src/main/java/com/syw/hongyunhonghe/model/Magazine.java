@@ -9,6 +9,7 @@ import cn.bmob.v3.datatype.BmobRelation;
  */
 public class Magazine extends BmobObject {
 
+    private int number;
     private String title;
     private int cover;
     private BmobRelation articles;
@@ -35,5 +36,13 @@ public class Magazine extends BmobObject {
 
     public void setCover(int cover) {
         this.cover = cover;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 }

@@ -1,5 +1,6 @@
 package com.syw.hongyunhonghe;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -7,6 +8,8 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -16,7 +19,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.syw.hongyunhonghe.model.ArticleInfo;
+import com.syw.hongyunhonghe.model.DataFoundListener;
+import com.syw.hongyunhonghe.model.DataModel;
+
+import cn.bmob.v3.datatype.BmobFile;
 
 
 public class ArticleActivity extends Activity {
@@ -36,15 +50,21 @@ public class ArticleActivity extends Activity {
      */
     ViewPager mViewPager;
 
+    private static final int PICK_ARTICLE_REQUEST = 0;
+
+    public static final String PICKED_ARTICLE = "com.syw.hongyunhonghe.PICKED_ARTICLE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
+        // get articles
+        ArrayList<ArticleInfo> articleList = (ArrayList<ArticleInfo>)getIntent().getSerializableExtra(MainActivity.ARTICLE_LIST);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager(), articleList);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -75,6 +95,21 @@ public class ArticleActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_ARTICLE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                mViewPager.setCurrentItem(data.getIntExtra(PICKED_ARTICLE, 0));
+            }
+        }
+    }
+
+
+
+
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -82,69 +117,125 @@ public class ArticleActivity extends Activity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private ArrayList<ArticleInfo> arrayList;
+
+        public SectionsPagerAdapter(FragmentManager fm, ArrayList<ArticleInfo> arrayList) {
             super(fm);
+            this.arrayList = arrayList;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return ArticleFragment.newInstance(position, arrayList.get(position), arrayList);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return arrayList.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
-            return null;
+            return arrayList.get(position).getTitle();
         }
     }
+
+
+
+
+
+
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class ArticleFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        private ArticleInfo articleInfo;
+        private ArrayList<ArticleInfo> articleList;
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static ArticleFragment newInstance(int sectionNumber, ArticleInfo articleInfo, ArrayList<ArticleInfo> articleList) {
+            ArticleFragment fragment = new ArticleFragment();
+            fragment.articleInfo = articleInfo;
+            fragment.articleList = articleList;
+
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public ArticleFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_article, container, false);
+
+            // get content LinearLayout
+            LinearLayout contentLL = (LinearLayout)rootView.findViewById(R.id.article_content_layout);
+
+            // add content
+            articleInfo.reset();
+            while (articleInfo.hasNextContent()) {
+                if (articleInfo.isNextImg()) {
+                    // create a image view
+                    final ImageView imageView = new ImageView(getActivity());
+                    imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    contentLL.addView(imageView);
+
+                    // get img file
+                    DataModel dm = DataModel.getInstance(getActivity());
+                    articleInfo.getNextImg(dm, new DataFoundListener<BmobFile>() {
+                        @Override
+                        public void onSuccess(BmobFile imgFile) {
+                            imgFile.loadImage(getActivity(), imageView);
+                        }
+                    });
+
+                } else {
+                    // get part of article
+                    String part = articleInfo.getNextPart();
+
+                    // create a text view
+                    TextView textView = new TextView(getActivity());
+                    textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    textView.setText(part);
+
+                    // add to contentLL
+                    contentLL.addView(textView);
+                }
+            }
+
+            // TODO: add comment list
+
+
+            // set article list button
+            ImageButton navButton = (ImageButton)rootView.findViewById(R.id.nav_to_article_list_button);
+            navButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ArticleListActivity.class);
+                    intent.putExtra(MainActivity.ARTICLE_LIST, articleList);
+                    startActivityForResult(intent, PICK_ARTICLE_REQUEST);
+                }
+            });
+
             return rootView;
         }
+
     }
 
 }
