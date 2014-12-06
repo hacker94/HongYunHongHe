@@ -1,11 +1,8 @@
 package com.syw.hongyunhonghe;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +14,6 @@ import android.widget.TextView;
 import com.syw.hongyunhonghe.model.ArticleInfo;
 import com.syw.hongyunhonghe.model.DataFoundListener;
 import com.syw.hongyunhonghe.model.DataModel;
-import com.syw.hongyunhonghe.model.Magazine;
 import com.syw.hongyunhonghe.model.MagazineInfo;
 
 import java.util.ArrayList;
@@ -128,7 +124,7 @@ public class MainActivity extends Activity {
         if (id == R.id.action_main_refresh) {
             refreshMagazines();
         } else if (id == R.id.action_main_user) {
-            Intent intent = new Intent(this, ArticleListActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
 

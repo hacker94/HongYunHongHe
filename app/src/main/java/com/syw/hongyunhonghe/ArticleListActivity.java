@@ -3,7 +3,6 @@ package com.syw.hongyunhonghe;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,15 +17,13 @@ import java.util.ArrayList;
 
 public class ArticleListActivity extends Activity {
 
-    private LinearLayout articlesLL;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
         // find views
-        articlesLL = (LinearLayout)findViewById(R.id.articles_linear_layout);
+        LinearLayout articlesLL = (LinearLayout)findViewById(R.id.articles_linear_layout);
 
         // get article list from intent
         Intent intent = getIntent();

@@ -1,19 +1,14 @@
 package com.syw.hongyunhonghe;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,12 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.syw.hongyunhonghe.model.ArticleInfo;
@@ -273,9 +266,6 @@ public class ArticleActivity extends Activity {
                     startActivityForResult(intent, PICK_ARTICLE_REQUEST);
                 }
             });
-
-            // set review edit text
-            EditText reviewEditText = (EditText)rootView.findViewById(R.id.review_edit_text);
 
             return rootView;
         }

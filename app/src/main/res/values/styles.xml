@@ -9,7 +9,7 @@
 
     <style name="AppTheme.ActionBar" parent="android:Widget.Holo.Light.ActionBar">
         <item name="android:background">@color/white</item>
-        <item name="android:icon">@color/transparent</item>
+        <!--<item name="android:icon">@color/transparent</item>-->
         <item name="android:gravity">center</item>
         <item name="android:titleTextStyle">@style/AppTheme.ActionBar.Title</item>
     </style>
