@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,7 +26,8 @@ public class MainActivity extends Activity {
 
     public static final String ARTICLE_LIST = "com.syw.hongyunhonghe.ARTICLE_LIST";
 
-    private LinearLayout magazinesLL;
+    private GridLayout magazinesLL;
+    private LinearLayout loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         // find views
-        magazinesLL = (LinearLayout)findViewById(R.id.magazines_linear_layout);
+        magazinesLL = (GridLayout)findViewById(R.id.magazines_gird_layout);
+        loadingBar = (LinearLayout)findViewById(R.id.magazine_loading_progress_layout);
 
         // init DataModel
         DataModel.init(this);
@@ -46,6 +49,8 @@ public class MainActivity extends Activity {
     private void refreshMagazines() {
         // clear magazinesLL
         magazinesLL.removeAllViews();
+        // show progress bar
+        loadingBar.setVisibility(View.VISIBLE);
 
         final DataModel dm = DataModel.getInstance(getBaseContext());
         dm.getMagazines(new DataFoundListener<ArrayList<MagazineInfo>>() {
@@ -54,16 +59,21 @@ public class MainActivity extends Activity {
                 for (final MagazineInfo magazineInfo : magazineList) {
                     // inflate
                     LayoutInflater layoutInflater = getLayoutInflater();
-                    LinearLayout mgzIconButton = (LinearLayout)layoutInflater.inflate(R.layout.mgz_icon_button, magazinesLL, false);
+
+                    LinearLayout mgzIconButton = (LinearLayout)layoutInflater.inflate(R.layout.image_button_with_text, magazinesLL, false);
 
                     // set title
-                    TextView magazineTitleTextView = (TextView)mgzIconButton.findViewById(R.id.magazine_title_text_view);
+                    TextView magazineTitleTextView = (TextView)mgzIconButton.findViewById(R.id.label_text);
                     magazineTitleTextView.setText(magazineInfo.getTitle());
                     magazineTitleTextView.setOnClickListener(new MagazineOnClickListener(magazineInfo));
 
                     // set cover
-                    final ImageButton coverImageButton = (ImageButton)mgzIconButton.findViewById(R.id.cover_image_button);
+                    final ImageButton coverImageButton = (ImageButton)mgzIconButton.findViewById(R.id.image_button);
+                    coverImageButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     coverImageButton.setOnClickListener(new MagazineOnClickListener(magazineInfo));
+
+                    // hide progress bar
+                    loadingBar.setVisibility(View.GONE);
 
                     // add to magazinesLL
                     magazinesLL.addView(mgzIconButton);
@@ -74,8 +84,18 @@ public class MainActivity extends Activity {
                         public void onSuccess(BmobFile imgFile) {
                             imgFile.loadImage(getBaseContext(), coverImageButton);
                         }
+
+                        @Override
+                        public void onFail(BmobFile object) {
+
+                        }
                     });
                 }
+
+            }
+
+            @Override
+            public void onFail(ArrayList<MagazineInfo> object) {
 
             }
         });
@@ -99,6 +119,11 @@ public class MainActivity extends Activity {
                     Intent intent = new Intent(MainActivity.this, ArticleActivity.class);
                     intent.putExtra(ARTICLE_LIST, articleList);  // pass articleList
                     startActivity(intent);
+                }
+
+                @Override
+                public void onFail(ArrayList<ArticleInfo> object) {
+
                 }
             });
 
@@ -124,7 +149,7 @@ public class MainActivity extends Activity {
         if (id == R.id.action_main_refresh) {
             refreshMagazines();
         } else if (id == R.id.action_main_user) {
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, UserActivity.class);
             startActivity(intent);
         }
 

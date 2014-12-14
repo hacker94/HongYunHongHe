@@ -1,13 +1,11 @@
 package com.syw.hongyunhonghe;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -17,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +23,8 @@ import android.widget.TextView;
 import com.syw.hongyunhonghe.model.ArticleInfo;
 import com.syw.hongyunhonghe.model.DataFoundListener;
 import com.syw.hongyunhonghe.model.DataModel;
+
+import java.util.ArrayList;
 
 import cn.bmob.v3.datatype.BmobFile;
 
@@ -234,6 +233,11 @@ public class ArticleActivity extends Activity {
                         public void onSuccess(BmobFile imgFile) {
                             imgFile.loadImage(getActivity(), imageView);
                         }
+
+                        @Override
+                        public void onFail(BmobFile object) {
+
+                        }
                     });
 
                 } else {
@@ -244,6 +248,7 @@ public class ArticleActivity extends Activity {
                     TextView textView = new TextView(getActivity());
                     textView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.article_text_size));
+                    textView.setLineSpacing(0, (float)1.4); // height = height * 1.4 + 0
                     int padding = getResources().getDimensionPixelSize(R.dimen.article_text_padding);
                     textView.setPadding(0, padding, 0, padding);
                     textView.setText(part);

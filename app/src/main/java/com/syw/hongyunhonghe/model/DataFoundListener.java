@@ -5,4 +5,5 @@ package com.syw.hongyunhonghe.model;
  */
 public interface DataFoundListener<T> {
     public void onSuccess(T object);
+    public void onFail(T object);
 }

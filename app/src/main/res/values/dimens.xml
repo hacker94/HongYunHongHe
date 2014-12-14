@@ -3,6 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="magazine_icon_width">50dp</dimen>
+
     <dimen name="article_list_row_horizontal_padding">12dp</dimen>
     <dimen name="article_list_row_vertical_padding">15dp</dimen>
     <dimen name="article_list_text_size">18sp</dimen>
@@ -14,6 +16,6 @@
     <dimen name="article_subtitle_text_size">19sp</dimen>
     <dimen name="article_author_text_size">13sp</dimen>
     <dimen name="article_text_size">18sp</dimen>
-    <dimen name="article_text_padding">5dp</dimen>
+    <dimen name="article_text_padding">8dp</dimen>
 
 </resources>

@@ -5,13 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -25,9 +23,14 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.syw.hongyunhonghe.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.bmob.v3.listener.SaveListener;
 
 
 /**
@@ -140,7 +143,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.login();
         }
     }
 
@@ -242,11 +245,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mEmailView.setAdapter(adapter);
     }
 
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask {
 
         private final String mEmail;
         private final String mPassword;
@@ -256,46 +260,59 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mPassword = password;
         }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        public void signUp() {
 
-            try {
-                // Simulate network access.
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+        }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+        public void login() {
+            final User user = new User();
+            user.setUsername(mEmail);
+            user.setPassword(mPassword);
+
+            // login
+            user.login(getApplicationContext(), new SaveListener() {
+                @Override
+                public void onSuccess() {
+                    // login success
+                    onResponse(true);
                 }
-            }
 
-            // TODO: register the new account here.
-            return true;
-        }
+                @Override
+                public void onFailure(int i, String s) {
+                    // sign up
+                    user.setEmail(mEmail);
+                    user.signUp(getApplicationContext(), new SaveListener() {
+                        @Override
+                        public void onSuccess() {
+                            // sign up success
+                            onResponse(true);
+                        }
 
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
+                        @Override
+                        public void onFailure(int i, String s) {
+                            onResponse(false);
+                            if (i == 202) {
+                                // user exist -> invalid password
+                                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                mPasswordView.requestFocus();
+                            } else {
+                                // unknown error
+                                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
 
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
+                private void onResponse(boolean success) {
+                    mAuthTask = null;
+                    showProgress(false);
+                    if (success) {
+                        Intent returnIntent = new Intent();
+                        setResult(RESULT_OK, returnIntent);
+                        finish();
+                    }
+                }
+            });
         }
     }
 }
