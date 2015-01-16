@@ -18,4 +18,11 @@
     <dimen name="article_text_size">18sp</dimen>
     <dimen name="article_text_padding">8dp</dimen>
 
+    <dimen name="review_row_horizontal_padding">10dp</dimen>
+    <dimen name="review_row_vertical_padding">13dp</dimen>
+
+    <dimen name="review_username_text_size">16sp</dimen>
+    <dimen name="review_time_text_size">16sp</dimen>
+    <dimen name="review_text_size">16sp</dimen>
+
 </resources>

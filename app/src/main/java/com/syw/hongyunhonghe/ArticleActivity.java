@@ -9,12 +9,14 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,8 +57,6 @@ public class ArticleActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
-
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         // get articles
         ArrayList<ArticleInfo> articleList = (ArrayList<ArticleInfo>)getIntent().getSerializableExtra(MainActivity.ARTICLE_LIST);
@@ -159,6 +159,8 @@ public class ArticleActivity extends Activity {
 
         private ArticleInfo articleInfo;
         private ArrayList<ArticleInfo> articleList;
+
+        final DataModel dm = DataModel.getInstance(getActivity());
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -266,8 +268,6 @@ public class ArticleActivity extends Activity {
                 }
             }
 
-            // TODO: add comment list
-
 
             // set article list button
             ImageButton navButton = (ImageButton)rootView.findViewById(R.id.nav_to_article_list_button);
@@ -280,9 +280,52 @@ public class ArticleActivity extends Activity {
                 }
             });
 
+
+            //set add review EditText
+            final EditText editText = (EditText)rootView.findViewById(R.id.review_edit_text);
+            editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int keyCode, KeyEvent event) {
+                    if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
+                            keyCode == EditorInfo.IME_ACTION_DONE ||
+                            event.getAction() == KeyEvent.ACTION_DOWN &&
+                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                        if (!editText.getText().toString().equals("")) {
+                            dm.addReview(articleInfo, editText.getText().toString(), new DataFoundListener<String>() {
+                                @Override
+                                public void onSuccess(String msg) {
+                                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                                    editText.setText("");
+                                }
+
+                                @Override
+                                public void onFail(String msg) {
+                                    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+
+            // set reviews button
+            ImageButton reviewsButton = (ImageButton)rootView.findViewById(R.id.article_reviews_button);
+            reviewsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ReviewsActivity.class);
+                    intent.putExtra(PICKED_ARTICLE, articleInfo);
+                    startActivity(intent);
+                }
+            });
+
+
             // set favourite button
             final ImageButton favButton = (ImageButton)rootView.findViewById(R.id.article_favourite_button);
-            final DataModel dm = DataModel.getInstance(getActivity());
+
             dm.isFavArticle(articleInfo.getArticle(), new DataFoundListener<Boolean>() {
                 @Override
                 public void onSuccess(Boolean object) {

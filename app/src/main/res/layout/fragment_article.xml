@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.syw.hongyunhonghe.ArticleActivity$PlaceholderFragment">
+    tools:context="com.syw.hongyunhonghe.ArticleActivity$PlaceholderFragment"
+    android:focusableInTouchMode="true">
 
 
     <ScrollView
@@ -48,10 +49,15 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:imeActionId="@+id/add_review_ime"
+            android:imeActionLabel="评论"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:singleLine="true"
             android:hint="@string/review_text_hint" />
 
         <ImageButton
-
+            android:id="@+id/article_reviews_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@color/transparent"

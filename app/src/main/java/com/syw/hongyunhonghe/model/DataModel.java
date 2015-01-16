@@ -186,7 +186,7 @@ public final class DataModel {
         }
     }
 
-    public void removeFavArticle(ArticleInfo articleInfo, final DataFoundListener listener) {
+    public void removeFavArticle(ArticleInfo articleInfo, final DataFoundListener<String> listener) {
         User user = BmobUser.getCurrentUser(context, User.class);
         if (user == null) {
             listener.onFail("请先登录");
@@ -220,5 +220,57 @@ public final class DataModel {
                 }
             });
         }
+    }
+
+
+    public void addReview(ArticleInfo articleInfo, String text, final DataFoundListener<String> listener) {
+        User user = BmobUser.getCurrentUser(context, User.class);
+        if (user == null) {
+            listener.onFail("请先登录");
+        } else {
+            Review review = new Review();
+            review.setUser(user);
+            review.setArticle(articleInfo.getArticle());
+            review.setText(text);
+
+            review.save(context, new SaveListener() {
+                @Override
+                public void onSuccess() {
+                    listener.onSuccess("评论成功");
+                }
+
+                @Override
+                public void onFailure(int i, String msg) {
+                    Log.d("添加评论失败", msg);
+                    listener.onFail("评论失败");
+                }
+            });
+        }
+    }
+
+
+    public void getReview(ArticleInfo articleInfo, final DataFoundListener<ArrayList<ReviewInfo>> listener) {
+        BmobQuery<Review> query = new BmobQuery<Review>();
+        query.addWhereEqualTo("article", articleInfo.getArticle());
+        query.include("user");
+        query.setLimit(1000);
+        query.findObjects(context, new FindListener<Review>() {
+
+            @Override
+            public void onSuccess(List<Review> reviews) {
+                ArrayList<ReviewInfo> reviewList = new ArrayList<>();
+                for (Review review : reviews) {
+                    ReviewInfo reviewInfo = new ReviewInfo(review.getUser().getUsername(), review.getText(), review.getCreatedAt());
+                    reviewList.add(reviewInfo);
+                }
+                listener.onSuccess(reviewList);
+            }
+
+            @Override
+            public void onError(int code, String msg) {
+                Log.d("获取评论列表失败", msg);
+                listener.onFail(null);
+            }
+        });
     }
 }

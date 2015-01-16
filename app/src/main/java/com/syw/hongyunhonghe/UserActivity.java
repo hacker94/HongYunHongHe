@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.syw.hongyunhonghe.model.ArticleInfo;
 import com.syw.hongyunhonghe.model.DataFoundListener;
@@ -50,6 +51,10 @@ public class UserActivity extends Activity {
                     dm.getFavArticleInfoListByUser(new DataFoundListener<ArrayList<ArticleInfo>>() {
                         @Override
                         public void onSuccess(ArrayList<ArticleInfo> articleList) {
+                            if (articleList.size() == 0) {
+                                Toast.makeText(getBaseContext(), "您还没有收藏", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                             // set page number to "don't display"
                             for (ArticleInfo articleInfo : articleList) {
                                 articleInfo.setNumber(-1);
