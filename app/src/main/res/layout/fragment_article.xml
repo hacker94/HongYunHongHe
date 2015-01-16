@@ -51,12 +51,14 @@
             android:hint="@string/review_text_hint" />
 
         <ImageButton
+
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@color/transparent"
             android:src="@drawable/ic_action_chat"/>
 
         <ImageButton
+            android:id="@+id/article_favourite_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@color/transparent"

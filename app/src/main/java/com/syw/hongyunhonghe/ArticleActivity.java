@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.syw.hongyunhonghe.model.ArticleInfo;
 import com.syw.hongyunhonghe.model.DataFoundListener;
@@ -68,7 +69,14 @@ public class ArticleActivity extends Activity {
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        // if page is selected
+        Intent intent = getIntent();
+        if (intent != null) {
+            mViewPager.setCurrentItem(intent.getIntExtra(PICKED_ARTICLE, 0));
+        }
+
     }
+
 
 
     @Override
@@ -269,6 +277,60 @@ public class ArticleActivity extends Activity {
                     Intent intent = new Intent(getActivity(), ArticleListActivity.class);
                     intent.putExtra(MainActivity.ARTICLE_LIST, articleList);
                     startActivityForResult(intent, PICK_ARTICLE_REQUEST);
+                }
+            });
+
+            // set favourite button
+            final ImageButton favButton = (ImageButton)rootView.findViewById(R.id.article_favourite_button);
+            final DataModel dm = DataModel.getInstance(getActivity());
+            dm.isFavArticle(articleInfo.getArticle(), new DataFoundListener<Boolean>() {
+                @Override
+                public void onSuccess(Boolean object) {
+                    favButton.setImageResource(R.drawable.ic_action_favorite_red);
+                }
+
+                @Override
+                public void onFail(Boolean object) {
+                }
+            });
+
+            favButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dm.isFavArticle(articleInfo.getArticle(), new DataFoundListener<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean object) {
+                            dm.removeFavArticle(articleInfo, new DataFoundListener<String>() {
+                                @Override
+                                public void onSuccess(String msg) {
+                                    Toast.makeText(getActivity(), "取消收藏成功", Toast.LENGTH_SHORT).show();
+                                    favButton.setImageResource(R.drawable.ic_action_favorite);
+                                }
+
+                                @Override
+                                public void onFail(String msg) {
+                                    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                        @Override
+                        public void onFail(Boolean object) {
+                            dm.addFavArticle(articleInfo, new DataFoundListener<String>() {
+                                @Override
+                                public void onSuccess(String msg) {
+                                    Toast.makeText(getActivity(), "收藏成功", Toast.LENGTH_SHORT).show();
+                                    favButton.setImageResource(R.drawable.ic_action_favorite_red);
+                                }
+
+                                @Override
+                                public void onFail(String msg) {
+                                    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+                        }
+                    });
+
                 }
             });
 

@@ -1,27 +1,21 @@
 package com.syw.hongyunhonghe.model;
 
-import android.content.Context;
-import android.util.Log;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
-
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.listener.FindListener;
 
 /**
  * Created by Hacker_PK on 14/12/5.
  */
 public class ArticleInfo implements Serializable {
 
+    private Article article;
     private int number;
     private String title;
     private String subtitle;
     private boolean swapTitlePos;
     private String author;
     private ArrayList<String> contentList;
+    private boolean isFav;
 
     private int i;
 
@@ -56,6 +50,18 @@ public class ArticleInfo implements Serializable {
 
         // find it
         dm.getImgById(imgID, listener);
+    }
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public boolean isFav() {
+        return isFav;
+    }
+
+    public void setFav(boolean isFav) {
+        this.isFav = isFav;
     }
 
     public ArrayList<String> getContentList() {
@@ -106,12 +112,13 @@ public class ArticleInfo implements Serializable {
         this.number = number;
     }
 
-    public ArticleInfo(int number, String title, String subtitle, boolean swapTitlePos, String author, ArrayList<String> contentList) {
-        this.number = number;
-        this.title = title;
-        this.subtitle = subtitle;
-        this.swapTitlePos = swapTitlePos;
-        this.author = author;
-        this.contentList = contentList;
+    public ArticleInfo(Article article) {
+        this.article = article;
+        this.number = article.getNumber();
+        this.title = article.getTitle();
+        this.subtitle = article.getSubtitle();
+        this.swapTitlePos = article.isSwapTitlePos();
+        this.author = article.getAuthor();
+        this.contentList = article.getContentList();
     }
 }

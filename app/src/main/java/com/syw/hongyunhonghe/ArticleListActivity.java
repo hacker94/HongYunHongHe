@@ -30,19 +30,25 @@ public class ArticleListActivity extends Activity {
         ArrayList<ArticleInfo> articleList = (ArrayList<ArticleInfo>)intent.getSerializableExtra(MainActivity.ARTICLE_LIST);
 
         // generate article rows and add to articlesLL
+        int i = 0;
         for (ArticleInfo articleInfo : articleList) {
             // inflate
             LayoutInflater layoutInflater = getLayoutInflater();
             final LinearLayout rowLayout = (LinearLayout)layoutInflater.inflate(R.layout.article_list_row, articlesLL, false);
 
             // set tag
-            rowLayout.setTag(articleInfo.getNumber());
+            rowLayout.setTag(i++);
 
             // set text
             TextView titleTextView = (TextView)rowLayout.findViewById(R.id.article_title_text_view);
             TextView numberTextView = (TextView)rowLayout.findViewById(R.id.article_number_text_view);
             titleTextView.setText(articleInfo.getTitle());
-            numberTextView.setText('(' + Integer.toString(articleInfo.getNumber()) + ')');
+            if (articleInfo.getNumber() >= 0) {
+                numberTextView.setText('(' + Integer.toString(articleInfo.getNumber()) + ')');
+            } else {
+                // don't want to display page number
+                numberTextView.setText("");
+            }
 
             // set onClick
             rowLayout.setOnClickListener(new View.OnClickListener() {

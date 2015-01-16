@@ -9,7 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.syw.hongyunhonghe.model.ArticleInfo;
+import com.syw.hongyunhonghe.model.DataFoundListener;
+import com.syw.hongyunhonghe.model.DataModel;
 import com.syw.hongyunhonghe.model.User;
+
+import java.util.ArrayList;
 
 import cn.bmob.v3.BmobUser;
 
@@ -37,7 +42,30 @@ public class UserActivity extends Activity {
             setUserInfo();
 
             // set favourites button listener
+            Button favButton = (Button)findViewById(R.id.favourite_button);
+            favButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataModel dm = DataModel.getInstance(getBaseContext());
+                    dm.getFavArticleInfoListByUser(new DataFoundListener<ArrayList<ArticleInfo>>() {
+                        @Override
+                        public void onSuccess(ArrayList<ArticleInfo> articleList) {
+                            // set page number to "don't display"
+                            for (ArticleInfo articleInfo : articleList) {
+                                articleInfo.setNumber(-1);
+                            }
+                            Intent intent = new Intent(getBaseContext(), ArticleActivity.class);
+                            intent.putExtra(MainActivity.ARTICLE_LIST, articleList);
+                            startActivity(intent);
+                        }
 
+                        @Override
+                        public void onFail(ArrayList<ArticleInfo> articleList) {
+                            // do nothing
+                        }
+                    });
+                }
+            });
         }
     }
 

@@ -14,6 +14,6 @@
     <string name="title_activity_reviews">评论</string>
     <string name="user_logout_button">注销</string>
     <string name="user_editor_button">修改密码</string>
-    <string name="user_favourite_text">收藏</string>
+    <string name="user_favourite_text">收藏列表</string>
 
 </resources>
