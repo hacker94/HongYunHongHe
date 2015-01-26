@@ -44,7 +44,7 @@ public class ArticleListActivity extends Activity {
             TextView numberTextView = (TextView)rowLayout.findViewById(R.id.article_number_text_view);
             titleTextView.setText(articleInfo.getTitle());
             if (articleInfo.getNumber() >= 0) {
-                numberTextView.setText('(' + Integer.toString(articleInfo.getNumber()) + ')');
+                numberTextView.setText("(" + i + ")");
             } else {
                 // don't want to display page number
                 numberTextView.setText("");
