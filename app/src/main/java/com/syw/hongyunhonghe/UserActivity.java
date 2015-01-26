@@ -48,7 +48,7 @@ public class UserActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     DataModel dm = DataModel.getInstance(getBaseContext());
-                    dm.getFavArticleInfoListByUser(new DataFoundListener<ArrayList<ArticleInfo>>() {
+                    dm.getFavArticleInfoListByUser(user, new DataFoundListener<ArrayList<ArticleInfo>>() {
                         @Override
                         public void onSuccess(ArrayList<ArticleInfo> articleList) {
                             if (articleList.size() == 0) {

@@ -82,7 +82,7 @@ public class MainActivity extends Activity {
                     magazineInfo.getCover(dm, new DataFoundListener<BmobFile>() {
                         @Override
                         public void onSuccess(BmobFile imgFile) {
-                            imgFile.loadImage(getBaseContext(), coverImageButton);
+                            imgFile.loadImageThumbnail(getBaseContext(), coverImageButton, 189, 239);
                         }
 
                         @Override

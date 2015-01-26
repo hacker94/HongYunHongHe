@@ -106,7 +106,7 @@ public final class DataModel {
         });
     }
 
-    public void isFavArticle(Article article, final DataFoundListener<Boolean> listener) {
+    public void isFavArticle(final Article article, final DataFoundListener<Boolean> listener) {
         User user = BmobUser.getCurrentUser(context, User.class);
         if (user == null) {
             listener.onFail(false);
@@ -114,11 +114,18 @@ public final class DataModel {
 
         BmobQuery<Favour> query = new BmobQuery<Favour>();
         query.addWhereEqualTo("user", user);
-        query.addWhereEqualTo("article", article);
+        query.include("article");
         query.findObjects(context, new FindListener<Favour>() {
             @Override
             public void onSuccess(List<Favour> list) {
-                if (list.size() > 0) {
+                int cnt = 0;
+                for (Favour favour : list) {
+                    Article favouriteArticle = favour.getArticle();
+                    if (favouriteArticle != null && favouriteArticle.getObjectId().equals(article.getObjectId())) {
+                        cnt++;
+                    }
+                }
+                if (cnt > 0) {
                     listener.onSuccess(true);
                 } else {
                     listener.onFail(false);
@@ -133,8 +140,7 @@ public final class DataModel {
         });
     }
 
-    public void getFavArticleInfoListByUser(final DataFoundListener listener) {
-        User user = BmobUser.getCurrentUser(context, User.class);
+    public void getFavArticleInfoListByUser(User user, final DataFoundListener listener) {
 
         BmobQuery<Favour> query = new BmobQuery<Favour>();
         query.addWhereEqualTo("user", user);
@@ -186,30 +192,32 @@ public final class DataModel {
         }
     }
 
-    public void removeFavArticle(ArticleInfo articleInfo, final DataFoundListener<String> listener) {
+    public void removeFavArticle(final ArticleInfo articleInfo, final DataFoundListener<String> listener) {
         User user = BmobUser.getCurrentUser(context, User.class);
         if (user == null) {
             listener.onFail("请先登录");
         } else {
             BmobQuery<Favour> query = new BmobQuery<Favour>();
             query.addWhereEqualTo("user", user);
-            query.addWhereEqualTo("article", articleInfo.getArticle());
+            query.include("article");
             query.findObjects(context, new FindListener<Favour>() {
                 @Override
                 public void onSuccess(List<Favour> list) {
                     for (Favour favour : list) {
-                        favour.delete(context, new DeleteListener() {
-                            @Override
-                            public void onSuccess() {
-                                listener.onSuccess("取消收藏成功");
-                            }
+                        if (favour.getArticle().getObjectId().equals(articleInfo.getArticle().getObjectId())) {
+                            favour.delete(context, new DeleteListener() {
+                                @Override
+                                public void onSuccess() {
+                                    listener.onSuccess("取消收藏成功");
+                                }
 
-                            @Override
-                            public void onFailure(int i, String s) {
-                                Log.d("删除收藏出错", s);
-                                listener.onFail("取消收藏失败");
-                            }
-                        });
+                                @Override
+                                public void onFailure(int i, String s) {
+                                    Log.d("删除收藏出错", s);
+                                    listener.onFail("取消收藏失败");
+                                }
+                            });
+                        }
                     }
                 }
 

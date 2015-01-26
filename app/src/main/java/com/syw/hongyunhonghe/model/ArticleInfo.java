@@ -33,7 +33,7 @@ public class ArticleInfo implements Serializable {
 
     public boolean isNextImg() {
         String s = contentList.get(i);
-        if (s.substring(0, 5).equals("_IMG_")) {
+        if (s.length() > 5 && s.substring(0, 5).equals("_IMG_")) {
             return true;
         } else {
             return false;

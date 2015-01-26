@@ -53,6 +53,8 @@ public class ArticleActivity extends Activity {
 
     public static final String PICKED_ARTICLE = "com.syw.hongyunhonghe.PICKED_ARTICLE";
 
+    public final DataModel dm = DataModel.getInstance(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,13 +162,12 @@ public class ArticleActivity extends Activity {
         private ArticleInfo articleInfo;
         private ArrayList<ArticleInfo> articleList;
 
-        final DataModel dm = DataModel.getInstance(getActivity());
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
         public static ArticleFragment newInstance(int sectionNumber, ArticleInfo articleInfo, ArrayList<ArticleInfo> articleList) {
+
             ArticleFragment fragment = new ArticleFragment();
 
             Bundle args = new Bundle();
@@ -291,6 +292,7 @@ public class ArticleActivity extends Activity {
                             event.getAction() == KeyEvent.ACTION_DOWN &&
                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                         if (!editText.getText().toString().equals("")) {
+                            DataModel dm = DataModel.getInstance(getActivity());
                             dm.addReview(articleInfo, editText.getText().toString(), new DataFoundListener<String>() {
                                 @Override
                                 public void onSuccess(String msg) {
@@ -326,6 +328,7 @@ public class ArticleActivity extends Activity {
             // set favourite button
             final ImageButton favButton = (ImageButton)rootView.findViewById(R.id.article_favourite_button);
 
+            DataModel dm = DataModel.getInstance(getActivity());
             dm.isFavArticle(articleInfo.getArticle(), new DataFoundListener<Boolean>() {
                 @Override
                 public void onSuccess(Boolean object) {
@@ -334,12 +337,14 @@ public class ArticleActivity extends Activity {
 
                 @Override
                 public void onFail(Boolean object) {
+                    favButton.setImageResource(R.drawable.ic_action_favorite);
                 }
             });
 
             favButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    final DataModel dm = DataModel.getInstance(getActivity());
                     dm.isFavArticle(articleInfo.getArticle(), new DataFoundListener<Boolean>() {
                         @Override
                         public void onSuccess(Boolean object) {
