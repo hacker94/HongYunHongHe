@@ -110,6 +110,7 @@ public final class DataModel {
         User user = BmobUser.getCurrentUser(context, User.class);
         if (user == null) {
             listener.onFail(false);
+            return;
         }
 
         BmobQuery<Favour> query = new BmobQuery<Favour>();

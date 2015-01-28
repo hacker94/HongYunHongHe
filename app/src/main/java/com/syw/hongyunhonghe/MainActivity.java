@@ -20,6 +20,7 @@ import com.syw.hongyunhonghe.model.MagazineInfo;
 import java.util.ArrayList;
 
 import cn.bmob.v3.datatype.BmobFile;
+import cn.sharesdk.framework.ShareSDK;
 
 
 public class MainActivity extends Activity {
@@ -40,6 +41,9 @@ public class MainActivity extends Activity {
 
         // init DataModel
         DataModel.init(this);
+
+        // init share sdk
+        ShareSDK.initSDK(this);
 
         // refresh magazines list
         refreshMagazines();

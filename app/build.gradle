@@ -26,4 +26,17 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile files('lib/BmobSDK_V3.3.1_0121.jar')
     compile files('lib/weibosdkcore_v3.0.1.jar')
+    compile files('lib/mframework.jar')
+    compile files('lib/ShareSDK-Core-2.5.7.jar')
+    compile files('lib/ShareSDK-QQ-2.5.7.jar')
+    compile files('lib/ShareSDK-QZone-2.5.7.jar')
+    compile files('lib/ShareSDK-ShortMessage-2.5.7.jar')
+    compile files('lib/ShareSDK-SinaWeibo-2.5.7.jar')
+    compile files('lib/ShareSDK-Wechat-2.5.7.jar')
+    compile files('lib/ShareSDK-Wechat-Core-2.5.7.jar')
+    compile files('lib/ShareSDK-Wechat-Moments-2.5.7.jar')
+    compile files('lib/ShareSDK-Email-2.5.7.jar')
+    compile files('lib/ShareSDK-Facebook-2.5.7.jar')
+    compile files('lib/ShareSDK-Twitter-2.5.7.jar')
+    compile files('lib/ShareSDK-Wechat-Favorite-2.5.7.jar')
 }

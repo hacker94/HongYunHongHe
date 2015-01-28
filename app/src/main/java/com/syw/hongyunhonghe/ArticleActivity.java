@@ -1,12 +1,19 @@
 package com.syw.hongyunhonghe;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -27,9 +34,15 @@ import com.syw.hongyunhonghe.model.ArticleInfo;
 import com.syw.hongyunhonghe.model.DataFoundListener;
 import com.syw.hongyunhonghe.model.DataModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.bmob.v3.datatype.BmobFile;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 
 public class ArticleActivity extends Activity {
@@ -186,14 +199,14 @@ public class ArticleActivity extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_article, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_article, container, false);
 
             // get articles from bundle
             articleInfo = (ArticleInfo)this.getArguments().getSerializable(ARG_ARTICLE_INFO);
             articleList = (ArrayList<ArticleInfo>)this.getArguments().getSerializable(ARG_ARTICLE_LIST);
 
             // get content LinearLayout
-            LinearLayout contentLL = (LinearLayout)rootView.findViewById(R.id.article_content_layout);
+            final LinearLayout contentLL = (LinearLayout)rootView.findViewById(R.id.article_content_layout);
 
             // add title, subtitle, author text
             TextView titleTextView = new TextView(getActivity());
@@ -382,7 +395,70 @@ public class ArticleActivity extends Activity {
                 }
             });
 
+
+            // set share button
+            ImageButton shareButton = (ImageButton)rootView.findViewById(R.id.article_share_button);
+            shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    OnekeyShare oks = new OnekeyShare();
+                    // 关闭sso授权
+                    oks.disableSSOWhenAuthorize();
+                    // 分享时Notification的图标和文字
+                    oks.setNotification(R.drawable.app_icon, getString(R.string.app_name));
+                    // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+                    oks.setTitle("今日红云红河");
+                    // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+                    oks.setTitleUrl("http://www.hyhhgroup.com/htmlnew/index.php");
+                    // text是分享文本，所有平台都需要这个字段
+                    String text = articleInfo.getTitle();
+                    if (articleInfo.isSwapTitlePos()) {
+                        text = articleInfo.getSubtitle() + " " + text;
+                    } else {
+                        text += " " + articleInfo.getSubtitle();
+                    }
+                    oks.setText(text);
+                    // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+                    Bitmap screenShot = loadBitmapFromView(contentLL);
+                    try {
+                        File file = File.createTempFile("screen_shot", ".jpg", getActivity().getCacheDir());
+                        FileOutputStream out = new FileOutputStream(file);
+                        screenShot.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                        out.close();
+                        oks.setImagePath(file.getAbsolutePath());//确保SDcard下面存在此张图片
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    // site是分享此内容的网站名称，仅在QQ空间使用
+                    oks.setSite(getString(R.string.app_name));
+                    // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+                    oks.setSiteUrl("http://www.hyhhgroup.com/htmlnew/index.php");
+                    // 启动分享GUI
+                    oks.show(getActivity());
+                }
+            });
+
             return rootView;
+        }
+
+        // load bmp from view
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+        public Bitmap loadBitmapFromView(View v) {
+            Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(b);
+
+            Drawable old = v.getBackground(); // save original background
+            // set background color to while and draw the view
+            v.setBackgroundColor(getResources().getColor(R.color.white));
+            v.draw(c);
+            // restore original background
+            int sdk = android.os.Build.VERSION.SDK_INT;
+            if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                v.setBackgroundDrawable(old);
+            } else {
+                v.setBackground(old);
+            }
+            return b;
         }
 
 
