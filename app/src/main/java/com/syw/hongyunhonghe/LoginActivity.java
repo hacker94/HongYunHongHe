@@ -30,6 +30,8 @@ import com.syw.hongyunhonghe.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.EmailVerifyListener;
 import cn.bmob.v3.listener.SaveListener;
 
 
@@ -70,7 +72,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptLogin(false);
                     return true;
                 }
                 return false;
@@ -81,7 +83,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptLogin(false);
+            }
+        });
+
+        Button mEmailSignUpButton = (Button) findViewById(R.id.email_sign_up_button);
+        mEmailSignUpButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin(true);
             }
         });
 
@@ -99,7 +109,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
+    public void attemptLogin(boolean isSignUp) {
         if (mAuthTask != null) {
             return;
         }
@@ -143,7 +153,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.login();
+            if (isSignUp) {
+                mAuthTask.signUp();
+            } else {
+                mAuthTask.login();
+            }
         }
     }
 
@@ -261,7 +275,32 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         public void signUp() {
+            final User user = new User();
+            user.setUsername(mEmail);
+            user.setPassword(mPassword);
 
+            // sign up
+            user.setEmail(mEmail);
+            user.signUp(getApplicationContext(), new SaveListener() {
+                @Override
+                public void onSuccess() {
+                    // sign up success
+                    onResponse(true);
+                }
+
+                @Override
+                public void onFailure(int i, String s) {
+                    onResponse(false);
+                    if (i == 202) {
+                        // user exist
+                        mEmailView.setError(getString(R.string.error_duplicate_user));
+                        mEmailView.requestFocus();
+                    } else {
+                        // unknown error
+                        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
         }
 
         public void login() {
@@ -279,41 +318,35 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 @Override
                 public void onFailure(int i, String s) {
-                    // sign up
-                    user.setEmail(mEmail);
-                    user.signUp(getApplicationContext(), new SaveListener() {
-                        @Override
-                        public void onSuccess() {
-                            // sign up success
-                            onResponse(true);
-                        }
-
-                        @Override
-                        public void onFailure(int i, String s) {
-                            onResponse(false);
-                            if (i == 202) {
-                                // user exist -> invalid password
-                                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                                mPasswordView.requestFocus();
-                            } else {
-                                // unknown error
-                                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                }
-
-                private void onResponse(boolean success) {
-                    mAuthTask = null;
-                    showProgress(false);
-                    if (success) {
-                        Intent returnIntent = new Intent();
-                        setResult(RESULT_OK, returnIntent);
-                        finish();
+                    onResponse(false);
+                    if (i == 101) {
+                        // invalid password
+                        mPasswordView.setError(getString(R.string.error_incorrect_password));
+                        mPasswordView.setText("");
+                        mPasswordView.requestFocus();
+                    } else {
+                        // unknown error
+                        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
                     }
                 }
+
             });
+
         }
+
+
+        private void onResponse(boolean success) {
+            mAuthTask = null;
+            showProgress(false);
+            if (success) {
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK, returnIntent);
+                finish();
+            }
+        }
+
+
+
     }
 }
 

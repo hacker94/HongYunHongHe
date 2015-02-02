@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="name_text">姓名：</string>
+    <string name="company_text">公司：</string>
+    <string name="office_text">职位：</string>
+    <string name="edit_button_text">修改信息</string>
+</resources>

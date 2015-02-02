@@ -1,8 +1,10 @@
 package com.syw.hongyunhonghe;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,10 @@ import com.syw.hongyunhonghe.model.User;
 import java.util.ArrayList;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.EmailVerifyListener;
+import cn.bmob.v3.listener.ResetPasswordListener;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 
 public class UserActivity extends Activity {
@@ -32,6 +38,12 @@ public class UserActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         // check login status
         user = BmobUser.getCurrentUser(this, User.class);
@@ -47,6 +59,11 @@ public class UserActivity extends Activity {
             favButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // check email verified
+                    if (!checkEmailVerified(v.getContext())) {
+                        return;
+                    }
+
                     DataModel dm = DataModel.getInstance(getBaseContext());
                     dm.getFavArticleInfoListByUser(user, new DataFoundListener<ArrayList<ArticleInfo>>() {
                         @Override
@@ -73,7 +90,6 @@ public class UserActivity extends Activity {
             });
         }
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -115,9 +131,14 @@ public class UserActivity extends Activity {
 
     // set user info
     private void setUserInfo() {
+
         // set current user text
         TextView currentUserTextView = (TextView)findViewById(R.id.current_user_text);
-        currentUserTextView.setText(user.getEmail());
+        String name = user.getEmail();
+        if (user.getRealname() != null) {
+            name = user.getRealname();
+        }
+        currentUserTextView.setText("欢迎您，" + name);
 
         // set logout button listener
         Button logoutButton = (Button)findViewById(R.id.logout_button);
@@ -134,14 +155,77 @@ public class UserActivity extends Activity {
             }
         });
 
+        // set verify email button listener
+        final Button verifyButton = (Button)findViewById(R.id.verify_email_button);
+        if (user.getEmailVerified() != null && user.getEmailVerified()) {
+            verifyButton.setVisibility(View.GONE);
+        } else {
+            verifyButton.setVisibility(View.VISIBLE);
+        }
+        verifyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                BmobUser.requestEmailVerify(v.getContext(), user.getEmail(), new EmailVerifyListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(v.getContext(), "发送邮件成功，请到邮箱" + user.getEmail() + "中进行验证。验证后请重新登录。", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(int code, String e) {
+                        Toast.makeText(v.getContext(), "请求验证邮件失败:" + e, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
         // set user editor button listener
         Button editButton = (Button)findViewById(R.id.edit_user_button);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // check email verified
+                if (!checkEmailVerified(v.getContext())) {
+                    return;
+                }
+                Intent intent = new Intent(getBaseContext(), UserInfoActivity.class);
+                startActivity(intent);
+            }
+        });
 
-                // TODO: go to set user info activity
+        // set reset password button listener
+        Button resetButton = (Button)findViewById(R.id.reset_pwd_button);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                // check email verified
+                if (!checkEmailVerified(v.getContext())) {
+                    return;
+                }
+
+                BmobUser.resetPassword(v.getContext(), user.getEmail(), new ResetPasswordListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(v.getContext(), "重置密码请求成功，请到您的邮箱" + user.getEmail() + "查看邮件进行密码重置操作", Toast.LENGTH_LONG).show();
+                    }
+                    @Override
+                    public void onFailure(int code, String e) {
+                        Toast.makeText(v.getContext(), "重置密码失败:" + e, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
     }
+
+
+    // check email verified
+    private boolean checkEmailVerified(Context context) {
+        if (user.getEmailVerified() == null || !user.getEmailVerified()) {
+            Toast.makeText(context, "请先验证您的邮箱，如果已经验证请重新登录", Toast.LENGTH_LONG).show();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

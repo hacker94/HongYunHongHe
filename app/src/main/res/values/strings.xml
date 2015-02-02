@@ -12,8 +12,11 @@
     <string name="title_activity_user">用户</string>
     <string name="title_activity_favourite">收藏列表</string>
     <string name="title_activity_reviews">评论</string>
-    <string name="user_logout_button">注销</string>
-    <string name="user_editor_button">修改密码</string>
     <string name="user_favourite_text">收藏列表</string>
+    <string name="user_logout_button">退出登录</string>
+    <string name="user_editor_button">修改信息</string>
+    <string name="title_activity_user_info">修改信息</string>
+    <string name="user_verify_button">验证邮箱</string>
+    <string name="user_reset_pwd_button">重置密码</string>
 
 </resources>

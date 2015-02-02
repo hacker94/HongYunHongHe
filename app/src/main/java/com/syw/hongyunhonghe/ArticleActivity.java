@@ -255,7 +255,11 @@ public class ArticleActivity extends Activity {
                     articleInfo.getNextImg(dm, new DataFoundListener<BmobFile>() {
                         @Override
                         public void onSuccess(BmobFile imgFile) {
-                            imgFile.loadImage(getActivity(), imageView);
+                            try {
+                                imgFile.loadImage(getActivity(), imageView);
+                            } catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         @Override
